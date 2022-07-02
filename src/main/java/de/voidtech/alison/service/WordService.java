@@ -1,19 +1,16 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 package main.java.de.voidtech.alison.service;
 
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
-import main.java.de.voidtech.alison.entities.AlisonWord;
 import java.util.List;
+import java.util.Random;
+
 import org.hibernate.Session;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import main.java.de.voidtech.alison.entities.AlisonWord;
 
 @Service
 public class WordService
@@ -22,47 +19,21 @@ public class WordService
     private SessionFactory sessionFactory;
     
     public void clearUser(final String userID) {
-        final Session session = this.sessionFactory.openSession();
-        try {
+    	try (Session session = sessionFactory.openSession()) {
             session.getTransaction().begin();
             session.createQuery("DELETE FROM AlisonWord WHERE pack = :userID").setParameter("userID", (Object)userID).executeUpdate();
             session.getTransaction().commit();
-            if (session != null) {
-                session.close();
-            }
-        }
-        catch (Throwable t) {
-            if (session != null) {
-                try {
-                    session.close();
-                }
-                catch (Throwable exception) {
-                    t.addSuppressed(exception);
-                }
-            }
-            throw t;
         }
     }
     
-    public List<AlisonWord> getTopFiveWords(final String userID) {
-        final Session session = this.sessionFactory.openSession();
-        try {
-            final List list = session.createQuery("FROM AlisonWord WHERE pack = :pack ORDER BY frequency").setParameter("pack", (Object)userID).setMaxResults(5).list();
-            if (session != null) {
-                session.close();
-            }
-            return (List<AlisonWord>)list;
-        }
-        catch (Throwable t) {
-            if (session != null) {
-                try {
-                    session.close();
-                }
-                catch (Throwable exception) {
-                    t.addSuppressed(exception);
-                }
-            }
-            throw t;
+    @SuppressWarnings("unchecked")
+	public List<AlisonWord> getTopFiveWords(final String userID) {
+        try (Session session = sessionFactory.openSession()) {
+            final List<AlisonWord> list = (List<AlisonWord>) session.createQuery("FROM AlisonWord WHERE pack = :pack ORDER BY frequency")
+            		.setParameter("pack", userID)
+            		.setMaxResults(5)
+            		.list();
+            return list;
         }
     }
     
@@ -71,114 +42,57 @@ public class WordService
     }
     
     public AlisonWord getWordAllDetails(final String pack, final String word, final String next) {
-        final Session session = this.sessionFactory.openSession();
-        try {
-            final AlisonWord alisonWord = (AlisonWord)session.createQuery("FROM AlisonWord WHERE pack = :pack AND word = :word AND next = :next").setParameter("pack", (Object)pack).setParameter("word", (Object)word).setParameter("next", (Object)next).uniqueResult();
-            if (session != null) {
-                session.close();
-            }
+    	try (Session session = sessionFactory.openSession()) {
+            final AlisonWord alisonWord = (AlisonWord) session.createQuery("FROM AlisonWord WHERE pack = :pack AND word = :word AND next = :next")
+            		.setParameter("pack", pack)
+            		.setParameter("word", word)
+            		.setParameter("next", next)
+            		.uniqueResult();
             return alisonWord;
-        }
-        catch (Throwable t) {
-            if (session != null) {
-                try {
-                    session.close();
-                }
-                catch (Throwable exception) {
-                    t.addSuppressed(exception);
-                }
-            }
-            throw t;
         }
     }
     
-    public List<AlisonWord> getWordList(final String pack, final String word) {
-        final Session session = this.sessionFactory.openSession();
-        try {
-            final List list = session.createQuery("FROM AlisonWord WHERE pack = :pack AND word = :word").setParameter("pack", (Object)pack).setParameter("word", (Object)word).list();
-            if (session != null) {
-                session.close();
-            }
-            return (List<AlisonWord>)list;
-        }
-        catch (Throwable t) {
-            if (session != null) {
-                try {
-                    session.close();
-                }
-                catch (Throwable exception) {
-                    t.addSuppressed(exception);
-                }
-            }
-            throw t;
+    @SuppressWarnings("unchecked")
+	public List<AlisonWord> getWordList(final String pack, final String word) {
+    	try (Session session = sessionFactory.openSession()) {
+            final List<AlisonWord> list = (List<AlisonWord>) session.createQuery("FROM AlisonWord WHERE pack = :pack AND word = :word")
+            		.setParameter("pack", pack)
+            		.setParameter("word", word)
+            		.list();
+            return list;
         }
     }
     
     public AlisonWord getRandomWord(final String pack) {
-        final Session session = this.sessionFactory.openSession();
-        try {
-            final AlisonWord alisonWord = (AlisonWord)session.createQuery("FROM AlisonWord WHERE pack = :pack ORDER BY RANDOM()").setParameter("pack", (Object)pack).setMaxResults(1).uniqueResult();
-            if (session != null) {
-                session.close();
-            }
+    	try (Session session = sessionFactory.openSession()) {
+            final AlisonWord alisonWord = (AlisonWord) session.createQuery("FROM AlisonWord WHERE pack = :pack ORDER BY RANDOM()")
+            		.setParameter("pack", pack)
+            		.setMaxResults(1)
+            		.uniqueResult();
             return alisonWord;
-        }
-        catch (Throwable t) {
-            if (session != null) {
-                try {
-                    session.close();
-                }
-                catch (Throwable exception) {
-                    t.addSuppressed(exception);
-                }
-            }
-            throw t;
         }
     }
     
     public void updateWord(final AlisonWord word) {
-        final Session session = this.sessionFactory.openSession();
-        try {
+    	try (Session session = sessionFactory.openSession()) {
             session.getTransaction().begin();
-            session.saveOrUpdate((Object)word);
+            session.saveOrUpdate(word);
             session.getTransaction().commit();
-            if (session != null) {
-                session.close();
-            }
-        }
-        catch (Throwable t) {
-            if (session != null) {
-                try {
-                    session.close();
-                }
-                catch (Throwable exception) {
-                    t.addSuppressed(exception);
-                }
-            }
-            throw t;
         }
     }
     
     private void saveOrUpdate(final String ID, final String token, final String follow) {
-        AlisonWord word = this.getWordAllDetails(ID, token, follow);
-        if (word == null) {
-            word = new AlisonWord(ID, token, follow);
-        }
-        else {
-            word.incrementFrequency();
-        }
-        this.updateWord(word);
+        AlisonWord word = getWordAllDetails(ID, token, follow);
+        if (word == null) word = new AlisonWord(ID, token, follow);
+        else word.incrementFrequency();
+        updateWord(word);
     }
     
     public void learn(final String ID, final String content) {
         final List<String> tokens = Arrays.asList(content.split(" "));
         for (int i = 0; i < tokens.size(); ++i) {
-            if (i == tokens.size() - 1) {
-                this.saveOrUpdate(ID, tokens.get(i), "StopWord");
-            }
-            else {
-                this.saveOrUpdate(ID, tokens.get(i), tokens.get(i + 1));
-            }
+            if (i == tokens.size() - 1) saveOrUpdate(ID, tokens.get(i), "StopWord");
+            else saveOrUpdate(ID, tokens.get(i), tokens.get(i + 1));
         }
     }
     

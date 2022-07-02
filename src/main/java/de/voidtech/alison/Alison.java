@@ -1,31 +1,30 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 package main.java.de.voidtech.alison;
 
-import java.util.Properties;
-import org.springframework.boot.SpringApplication;
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import net.dv8tion.jda.api.requests.GatewayIntent;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Bean;
+import java.util.Properties;
+
 import javax.security.auth.login.LoginException;
-import net.dv8tion.jda.api.utils.Compression;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import java.util.Collection;
-import net.dv8tion.jda.api.JDABuilder;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.annotation.Order;
+
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+
+import main.java.de.voidtech.alison.listeners.MessageListener;
+import main.java.de.voidtech.alison.listeners.ReadyListener;
 import main.java.de.voidtech.alison.service.ConfigService;
 import net.dv8tion.jda.api.JDA;
-import main.java.de.voidtech.alison.listeners.ReadyListener;
-import main.java.de.voidtech.alison.listeners.MessageListener;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.Compression;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 @SpringBootApplication
 public class Alison
@@ -36,7 +35,14 @@ public class Alison
     @Autowired
     public JDA getJDA(final MessageListener msgListener, final ReadyListener readyListener) throws LoginException, InterruptedException {
         final ConfigService config = new ConfigService();
-        return JDABuilder.createDefault(config.getToken()).enableIntents((Collection)this.getNonPrivilegedIntents()).setMemberCachePolicy(MemberCachePolicy.ALL).setBulkDeleteSplittingEnabled(false).setStatus(OnlineStatus.ONLINE).setCompression(Compression.NONE).addEventListeners(new Object[] { msgListener, readyListener }).build().awaitReady();
+        return JDABuilder.createLight(config.getToken()).enableIntents(getNonPrivilegedIntents())
+        		.setMemberCachePolicy(MemberCachePolicy.ALL)
+        		.setBulkDeleteSplittingEnabled(false)
+        		.setStatus(OnlineStatus.ONLINE)
+        		.setCompression(Compression.NONE)
+        		.addEventListeners(new Object[] { msgListener, readyListener })
+        		.build()
+        		.awaitReady();
     }
     
     private List<GatewayIntent> getNonPrivilegedIntents() {

@@ -20,22 +20,26 @@ public class ImitateCommand extends AbstractCommand
     
     @Override
     public void execute(final Message message, final List<String> args) {
-        final String ID = args.get(0).replaceAll("([^0-9])", "");
+    	String ID;
+    	if (args.isEmpty()) ID = message.getAuthor().getId();
+    	else ID = args.get(0).replaceAll("([^0-9])", "");
+    	
         if (ID.equals("")) {
             message.reply((CharSequence)"I couldn't find that user :(").mentionRepliedUser(false).queue();
             return;
         }
+        
         final Result<User> userResult = (Result<User>)message.getJDA().retrieveUserById(ID).mapToResult().complete();
         if (userResult.isSuccess()) {
-            if (args.size() == 1) {
-                message.reply((CharSequence)this.wordService.generateRandomSentence(ID)).mentionRepliedUser(false).queue();
+            if (args.size() < 2) {
+                message.reply(wordService.generateRandomSentence(ID)).mentionRepliedUser(false).queue();
             }
             else {
-                message.reply((CharSequence)this.wordService.generatePromptedSentence(ID, (String)args.get(1))).mentionRepliedUser(false).queue();
+                message.reply(wordService.generatePromptedSentence(ID, args.get(1))).mentionRepliedUser(false).queue();
             }
         }
         else {
-            message.reply((CharSequence)ID).mentionRepliedUser(false).queue();
+            message.reply("User " + ID + " could not be found").mentionRepliedUser(false).queue();
         }
     }
     

@@ -1,16 +1,12 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 package main.java.de.voidtech.alison.service;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.io.InputStream;
-import java.io.FileInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Order(1)
 public class ConfigService
 {
-    private static final Logger LOGGER;
+    private static final Logger LOGGER = Logger.getLogger(ConfigService.class.getName());;
     private final Properties config;
     
     public ConfigService() {
@@ -42,11 +38,11 @@ public class ConfigService
                 }
             }
             catch (IOException e) {
-                ConfigService.LOGGER.log(Level.SEVERE, "an error has occurred while reading the config\n" + e.getMessage());
+                LOGGER.log(Level.SEVERE, "an error has occurred while reading the config\n" + e.getMessage());
             }
         }
         else {
-            ConfigService.LOGGER.log(Level.SEVERE, "There is no config file. You need a file called AlisonConfig.properties at the root of the project!");
+            LOGGER.log(Level.SEVERE, "There is no config file. You need a file called AlisonConfig.properties at the root of the project!");
         }
     }
     
@@ -82,9 +78,5 @@ public class ConfigService
     public String getConnectionURL() {
         final String dbURL = this.config.getProperty("hibernate.ConnectionURL");
         return (dbURL != null) ? dbURL : "jdbc:postgresql://localhost:5432/Alison";
-    }
-    
-    static {
-        ConfigService.LOGGER = Logger.getLogger(ConfigService.class.getName());
     }
 }
