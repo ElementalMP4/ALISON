@@ -2,3 +2,4 @@
 AlisonConfig.properties
 /target/
 .classpath
+dependency-reduced-pom.xml

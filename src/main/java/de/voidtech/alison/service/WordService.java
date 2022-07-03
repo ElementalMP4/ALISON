@@ -11,12 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.alison.entities.AlisonWord;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.Webhook;
 
 @Service
 public class WordService
 {
     @Autowired
     private SessionFactory sessionFactory;
+    
+    @Autowired
+    private WebhookManager webhookManager;
     
     public void clearUser(final String userID) {
     	try (Session session = sessionFactory.openSession()) {
@@ -96,35 +102,35 @@ public class WordService
         }
     }
     
-    public String generatePromptedSentence(final String iD, final String prompt) {
-        final List<AlisonWord> startWords = (List<AlisonWord>)this.getWordList(iD, prompt);
+    public void generatePromptedSentence(User user, Message message, String prompt) {
+        List<AlisonWord> startWords = getWordList(user.getId(), prompt);
         if (startWords == null) {
-            return "I couldn't use that prompt :(";
+        	message.reply("I couldn't use that prompt :(").mentionRepliedUser(false).queue();
         }
-        final List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<String>();
         AlisonWord next;
         List<AlisonWord> choices;
         for (next = this.getRandomWord(startWords); !next.isStopWord(); next = this.getRandomWord(choices)) {
             results.add(next.getWord());
-            final List<AlisonWord> potentials = (List<AlisonWord>)this.getWordList(iD, next.getNext());
+            List<AlisonWord> potentials = getWordList(user.getId(), next.getNext());
             choices = new ArrayList<AlisonWord>();
-            for (final AlisonWord word : potentials) {
+            for (AlisonWord word : potentials) {
                 for (int i = 0; i < word.getFrequency(); ++i) {
                     choices.add(word);
                 }
             }
         }
         results.add(next.getWord());
-        final String result = String.join(" ", results);
-        return result;
+        String result = String.join(" ", results);
+        Webhook webhook = webhookManager.getOrCreateWebhook(message.getTextChannel(), "Alison", message.getJDA().getSelfUser().getId());
+        webhookManager.postMessage(result, user.getAvatarUrl(), user.getName(), webhook);
     }
     
-    public String generateRandomSentence(final String iD) {
-        final AlisonWord start = this.getRandomWord(iD);
+    public void generateRandomSentence(User user, Message message) {
+        AlisonWord start = getRandomWord(user.getId());
         if (start == null) {
-            return "I couldn't imitate that person :(";
+            message.reply("I couldn't imitate that person :(").mentionRepliedUser(false).queue();
         }
-        final String sentence = this.generatePromptedSentence(iD, start.getWord());
-        return sentence;
+        generatePromptedSentence(user, message, start.getWord());
     }
 }
