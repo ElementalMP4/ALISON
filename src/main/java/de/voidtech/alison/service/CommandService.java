@@ -44,6 +44,6 @@ public class CommandService
             return;
         }
         LOGGER.log(Level.INFO, "Running command " + commandOpt.getName());
-        commandOpt.execute(message, messageArray.subList(1, messageArray.size()));
+        commandOpt.run(message, messageArray.subList(1, messageArray.size()));
     }   
 }

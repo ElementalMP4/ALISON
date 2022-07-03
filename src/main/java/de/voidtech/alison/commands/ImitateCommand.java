@@ -1,7 +1,3 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 package main.java.de.voidtech.alison.commands;
 
 import net.dv8tion.jda.api.entities.User;
@@ -29,18 +25,11 @@ public class ImitateCommand extends AbstractCommand
             return;
         }
         
-        final Result<User> userResult = (Result<User>)message.getJDA().retrieveUserById(ID).mapToResult().complete();
+        Result<User> userResult = message.getJDA().retrieveUserById(ID).mapToResult().complete();
         if (userResult.isSuccess()) {
-            if (args.size() < 2) {
-                message.reply(wordService.generateRandomSentence(ID)).mentionRepliedUser(false).queue();
-            }
-            else {
-                message.reply(wordService.generatePromptedSentence(ID, args.get(1))).mentionRepliedUser(false).queue();
-            }
-        }
-        else {
-            message.reply("User " + ID + " could not be found").mentionRepliedUser(false).queue();
-        }
+            if (args.size() < 2) wordService.generateRandomSentence(userResult.get(), message);
+            else wordService.generatePromptedSentence(userResult.get(), message, args.get(1));
+        } else message.reply("User " + ID + " could not be found").mentionRepliedUser(false).queue();
     }
     
     @Override
