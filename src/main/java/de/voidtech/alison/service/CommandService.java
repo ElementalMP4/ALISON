@@ -17,10 +17,16 @@ public class CommandService
 {
     @Autowired
     private ConfigService config;
+    
     @Autowired
     private WordService wordService;
+    
     @Autowired
     private List<AbstractCommand> commands;
+    
+    @Autowired
+    private PrivacyService privacyService;
+    
     private static final Logger LOGGER = Logger.getLogger(CommandService.class.getSimpleName());;
     
     private boolean shouldHandleAsChatCommand(final String prefix, final Message message) {
@@ -31,6 +37,7 @@ public class CommandService
     public void handleCommand(final Message message) {
         final String prefix = this.config.getDefaultPrefix();
         if (!this.shouldHandleAsChatCommand(prefix, message)) {
+        	if (privacyService.userIsIgnored(message.getAuthor().getId())) return;
             this.wordService.learn(message.getAuthor().getId(), message.getContentRaw());
             return;
         }

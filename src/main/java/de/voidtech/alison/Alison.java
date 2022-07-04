@@ -22,6 +22,7 @@ import main.java.de.voidtech.alison.service.ConfigService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -33,14 +34,15 @@ public class Alison
     @DependsOn({ "sessionFactory" })
     @Order(3)
     @Autowired
-    public JDA getJDA(final MessageListener msgListener, final ReadyListener readyListener) throws LoginException, InterruptedException {
+    public JDA getJDA(final MessageListener msgListener, final ReadyListener readyListener, EventWaiter waiter) throws LoginException, InterruptedException {
         final ConfigService config = new ConfigService();
         return JDABuilder.createLight(config.getToken()).enableIntents(getNonPrivilegedIntents())
         		.setMemberCachePolicy(MemberCachePolicy.ALL)
         		.setBulkDeleteSplittingEnabled(false)
-        		.setStatus(OnlineStatus.ONLINE)
+        		.setStatus(OnlineStatus.IDLE)
+        		.setActivity(Activity.competing("the game"))
         		.setCompression(Compression.NONE)
-        		.addEventListeners(new Object[] { msgListener, readyListener })
+        		.addEventListeners(new Object[] { msgListener, readyListener, waiter })
         		.build()
         		.awaitReady();
     }

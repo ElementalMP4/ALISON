@@ -1,7 +1,3 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 package main.java.de.voidtech.alison.entities;
 
 import javax.persistence.Column;
@@ -18,12 +14,16 @@ public class AlisonWord
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    
     @Column
     private String pack;
+    
     @Column
     private String word;
+    
     @Column
     private String next;
+    
     @Column
     private int frequency;
     
@@ -31,7 +31,7 @@ public class AlisonWord
     AlisonWord() {
     }
     
-    public AlisonWord(final String pack, final String word, final String next) {
+    public AlisonWord(String pack, String word, String next) {
         this.pack = pack;
         this.word = word;
         this.next = next;

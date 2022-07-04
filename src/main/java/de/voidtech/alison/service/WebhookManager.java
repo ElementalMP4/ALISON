@@ -35,7 +35,7 @@ public class WebhookManager {
 	}
 	
 	private void executeWebhookPost(String content, String avatarUrl, String username, Webhook webhook) {
-		String messageToBeSent = content.replaceAll("@everyone", "``@``everyone").replaceAll("@here", "``@``here");
+		String messageToBeSent = content.replaceAll("@everyone", "``@``everyone").replaceAll("@here", "``@``here").replaceAll("<@&", "<");
 		
 		JSONObject webhookPayload = new JSONObject();
         webhookPayload.put("content", messageToBeSent);

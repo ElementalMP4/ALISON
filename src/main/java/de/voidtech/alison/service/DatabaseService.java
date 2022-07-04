@@ -58,7 +58,7 @@ public class DatabaseService
 		
 		MetadataSources metadataSources = new MetadataSources(new StandardServiceRegistryBuilder().applySettings(hbnProperties).build());
 		
-		Set<Class<?>> annotated = new Reflections("main.java.de.voidtech.alison").getTypesAnnotatedWith(Entity.class);
+		Set<Class<?>> annotated = getAllEntities();
 		annotated.forEach(metadataSources::addAnnotatedClass);
 		
 		new SchemaUpdate()

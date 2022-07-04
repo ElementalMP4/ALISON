@@ -27,7 +27,7 @@ public class WordService
     public void clearUser(final String userID) {
     	try (Session session = sessionFactory.openSession()) {
             session.getTransaction().begin();
-            session.createQuery("DELETE FROM AlisonWord WHERE pack = :userID").setParameter("userID", (Object)userID).executeUpdate();
+            session.createQuery("DELETE FROM AlisonWord WHERE pack = :userID").setParameter("userID", userID).executeUpdate();
             session.getTransaction().commit();
         }
     }
