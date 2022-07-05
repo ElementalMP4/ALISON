@@ -18,4 +18,6 @@ public abstract class AbstractCommand {
 	
     public abstract void execute(final Message message, final List<String> args);
     public abstract String getName();
+    public abstract String getUsage();
+    public abstract String getDescription();
 }

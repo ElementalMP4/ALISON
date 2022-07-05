@@ -23,7 +23,7 @@ public class TopFiveCommand extends AbstractCommand
         final List<AlisonWord> topFive = wordService.getTopFiveWords(message.getAuthor().getId());
         String result = "";
         for (final AlisonWord word : topFive) {
-            result = result + word.getNext() + " - `" + word.getFrequency() + "`\n";
+            result = result + word.getWord() + " / " + word.getNext() + " - `" + word.getFrequency() + "`\n";
         }
         final MessageEmbed topFiveEmbed = new EmbedBuilder()
         		.setColor(Color.ORANGE)
@@ -37,4 +37,14 @@ public class TopFiveCommand extends AbstractCommand
     public String getName() {
         return "top";
     }
+
+	@Override
+	public String getUsage() {
+		return "top";
+	}
+
+	@Override
+	public String getDescription() {
+		return "Allows you to see your top 5 most common word combinations!";
+	}
 }

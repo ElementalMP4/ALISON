@@ -1,18 +1,24 @@
 package main.java.de.voidtech.alison.commands;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import main.java.de.voidtech.alison.annotations.Command;
+import main.java.de.voidtech.alison.service.PrivacyService;
+import main.java.de.voidtech.alison.service.WordService;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.Result;
-import java.util.List;
-import net.dv8tion.jda.api.entities.Message;
-import org.springframework.beans.factory.annotation.Autowired;
-import main.java.de.voidtech.alison.service.WordService;
-import main.java.de.voidtech.alison.annotations.Command;
 
 @Command
 public class ImitateCommand extends AbstractCommand
 {
     @Autowired
     private WordService wordService;
+    
+    @Autowired
+    private PrivacyService privacyService;
     
     @Override
     public void execute(final Message message, final List<String> args) {
@@ -27,8 +33,11 @@ public class ImitateCommand extends AbstractCommand
         
         Result<User> userResult = message.getJDA().retrieveUserById(ID).mapToResult().complete();
         if (userResult.isSuccess()) {
-            if (args.size() < 2) wordService.generateRandomSentence(userResult.get(), message);
-            else wordService.generatePromptedSentence(userResult.get(), message, args.get(1));
+        	if (privacyService.userIsIgnored(ID)) {
+        		message.reply("This user has chosen not to be imitated.").mentionRepliedUser(false).queue();
+        		return;
+        	}
+            wordService.generateRandomSentence(userResult.get(), message);
         } else message.reply("User " + ID + " could not be found").mentionRepliedUser(false).queue();
     }
     
@@ -36,4 +45,16 @@ public class ImitateCommand extends AbstractCommand
     public String getName() {
         return "imitate";
     }
+
+	@Override
+	public String getUsage() {
+		return "imitate [user mention or ID]";
+	}
+
+	@Override
+	public String getDescription() {
+		return "Allows you to use the power of ALISON to imitate someone! ALISON constantly learns from your messages,"
+				+ " and when you use this command, she uses her knowledge to try and speak like you do!\n\n"
+				+ "To stop ALISON from learning from you, use the optout command!";
+	}
 }

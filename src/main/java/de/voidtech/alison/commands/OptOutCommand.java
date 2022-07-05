@@ -73,4 +73,15 @@ public class OptOutCommand extends AbstractCommand {
 		return "optout";
 	}
 
+	@Override
+	public String getUsage() {
+		return "optout";
+	}
+
+	@Override
+	public String getDescription() {
+		return "Stops ALISON from learning from your messages. By default, you will be opted in."
+				+ " You can use the optin command to let ALISON learn from you, and the clear command to delete all your learnt words.";
+	}
+
 }

@@ -26,4 +26,14 @@ public class ClearCommand extends AbstractCommand
     public String getName() {
         return "clear";
     }
+
+	@Override
+	public String getUsage() {
+		return "clear";
+	}
+
+	@Override
+	public String getDescription() {
+		return "Allows you to delete all your learnt words. If you want ALISON to stop learning, use the optout command!";
+	}
 }
