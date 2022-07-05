@@ -27,7 +27,7 @@ public class CommandService
     @Autowired
     private PrivacyService privacyService;
     
-    private static final Logger LOGGER = Logger.getLogger(CommandService.class.getSimpleName());;
+    private static final Logger LOGGER = Logger.getLogger(CommandService.class.getSimpleName());
     
     private boolean shouldHandleAsChatCommand(final String prefix, final Message message) {
         final String messageRaw = message.getContentRaw();

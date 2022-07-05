@@ -51,6 +51,7 @@ public class OptOutCommand extends AbstractCommand {
 				case "YES":
 					wordService.clearUser(message.getAuthor().getId());
 					result.getMessage().editMessage("Data cleared!").queue();
+					break;
 				case "NO":
 					result.getMessage().editMessage("Data has been left alone for now. Use the `clear` command if you change your mind!").queue();
 					break;

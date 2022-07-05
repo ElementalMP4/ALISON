@@ -24,14 +24,14 @@ public class PrivacyService {
 	public void optIn(String id) {
     	try (Session session = sessionFactory.openSession()) {
             session.getTransaction().begin();
-            session.createQuery("DELETE FROM IgnoredUser WHERE user = :userID").setParameter("userID", id).executeUpdate();
+            session.createQuery("DELETE FROM IgnoredUser WHERE userID = :userID").setParameter("userID", id).executeUpdate();
             session.getTransaction().commit();
         }
 	}
 
 	public boolean userIsIgnored(String id) {
 		try (Session session = sessionFactory.openSession()) {
-            final IgnoredUser user = (IgnoredUser) session.createQuery("FROM IgnoredUser WHERE user = :userID")
+            final IgnoredUser user = (IgnoredUser) session.createQuery("FROM IgnoredUser WHERE userID = :userID")
             		.setParameter("userID", id)
             		.uniqueResult();
             return user != null;
