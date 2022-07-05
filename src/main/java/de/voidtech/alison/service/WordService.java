@@ -130,7 +130,8 @@ public class WordService
         AlisonWord start = getRandomWord(user.getId());
         if (start == null) {
             message.reply("I couldn't imitate that person :(").mentionRepliedUser(false).queue();
+        } else {
+        	generatePromptedSentence(user, message, start.getWord());
         }
-        generatePromptedSentence(user, message, start.getWord());
     }
 }
