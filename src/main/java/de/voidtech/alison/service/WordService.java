@@ -146,4 +146,15 @@ public class WordService
 			return count;
 		}
 	}
+
+	public long getTotalWords() {
+		try(Session session = sessionFactory.openSession())
+		{
+			@SuppressWarnings("rawtypes")
+			Query query = session.createQuery("SELECT COUNT(*) FROM AlisonWord");
+			long count = (long) query.uniqueResult();
+			session.close();
+			return count;
+		}
+	}
 }
