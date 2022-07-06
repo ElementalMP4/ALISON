@@ -30,8 +30,8 @@ public class InfoCommand extends AbstractCommand {
 				.setTitle("ALISON - Automatic Learning Intelligent Sentence Organising Network", GlobalConstants.REPO_URL)
 				.addField("Guild Count", "```" + guildCount + "```", true)
 				.addField("Member Count", "```" + memberCount + "```", true)
-				.addField("Total Word Count", "```" + wordCount + "```", true)
 				.addField("Active Threads", "```" + Thread.activeCount() + "```", true)
+				.addField("Total Word Count", "```" + wordCount + "```", true)
 				.setDescription("**Important Privacy Notice**\n"
 						+ "Data collected by ALISON is only available whilst you are opted in to the data collection program."
 						+ " To stop data collection, use the optout command."
