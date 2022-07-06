@@ -21,6 +21,7 @@ public class TopFiveCommand extends AbstractCommand
     @Override
     public void execute(final Message message, final List<String> args) {
         final List<AlisonWord> topFive = wordService.getTopFiveWords(message.getAuthor().getId());
+        final long wordCount = wordService.getWordCountForUser(message.getAuthor().getId());
         String result = "";
         for (final AlisonWord word : topFive) {
             result = result + word.getWord() + " / " + word.getNext() + " - `" + word.getFrequency() + "`\n";
@@ -28,7 +29,8 @@ public class TopFiveCommand extends AbstractCommand
         final MessageEmbed topFiveEmbed = new EmbedBuilder()
         		.setColor(Color.ORANGE)
         		.setTitle(message.getAuthor().getName() + "'s top 5 words")
-        		.setDescription((CharSequence)result)
+        		.setDescription(result)
+        		.setFooter("I have learnt " + wordCount + " words from you!")
         		.build();
         message.replyEmbeds(topFiveEmbed).mentionRepliedUser(false).queue();
     }

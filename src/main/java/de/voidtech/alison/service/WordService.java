@@ -7,6 +7,7 @@ import java.util.Random;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -134,4 +135,15 @@ public class WordService
         	generatePromptedSentence(user, message, start.getWord());
         }
     }
+
+	public long getWordCountForUser(String id) {
+		try(Session session = sessionFactory.openSession())
+		{
+			@SuppressWarnings("rawtypes")
+			Query query = session.createQuery("SELECT COUNT(*) FROM AlisonWord WHERE pack = :pack").setParameter("pack", id);
+			long count = (long) query.uniqueResult();
+			session.close();
+			return count;
+		}
+	}
 }
