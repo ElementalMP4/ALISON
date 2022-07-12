@@ -36,7 +36,7 @@ public class WordService
     @SuppressWarnings("unchecked")
 	public List<AlisonWord> getTopFiveWords(final String userID) {
         try (Session session = sessionFactory.openSession()) {
-            final List<AlisonWord> list = (List<AlisonWord>) session.createQuery("FROM AlisonWord WHERE pack = :pack ORDER BY frequency")
+            final List<AlisonWord> list = (List<AlisonWord>) session.createQuery("FROM AlisonWord WHERE pack = :pack ORDER BY frequency DESC")
             		.setParameter("pack", userID)
             		.setMaxResults(5)
             		.list();
