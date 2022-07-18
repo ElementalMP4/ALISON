@@ -1,17 +1,28 @@
 package main.java.de.voidtech.alison.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import main.java.de.voidtech.alison.entities.AfinnWord;
 import main.java.de.voidtech.alison.entities.AlisonWord;
+import main.java.de.voidtech.alison.entities.Toxicity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Webhook;
@@ -19,11 +30,74 @@ import net.dv8tion.jda.api.entities.Webhook;
 @Service
 public class WordService
 {
+	private static final Logger LOGGER = Logger.getLogger(WordService.class.getSimpleName());
+	private static List<AfinnWord> AfinnData = new ArrayList<AfinnWord>();
+	
     @Autowired
     private SessionFactory sessionFactory;
     
     @Autowired
     private WebhookManager webhookManager;
+    
+    @EventListener(ApplicationReadyEvent.class)
+    private void loadAfinn() {
+    	LOGGER.log(Level.INFO, "Loading AFINN dataset...");
+    	String data = getAfinnData();
+    	if (data == null) LOGGER.log(Level.SEVERE, "Couldn't load AFINN data!");
+    	else processAfinn(data);
+    }
+
+	private void processAfinn(String dataset) {
+		List<String> lines = Arrays.asList(dataset.split("\n"));
+		for (String line : lines) {
+			int score = Integer.valueOf(line.substring(line.length() - 2).trim());
+			String text = line.substring(0, line.length() - 2).trim();
+			AfinnData.add(new AfinnWord(text, score));
+		}
+		LOGGER.log(Level.INFO, "Loaded " + AfinnData.size() + " AFINN words");
+	}
+	
+	private List<String> tokenise(String input) {
+		return Arrays.asList(input.toLowerCase().split(" "));
+	}
+	
+	public Toxicity scoreUser(String userID) {
+		List<AlisonWord> words = getALotOfWordsForuser(userID);
+		if (words.isEmpty()) return null;
+		StringBuilder ohLawd = new StringBuilder();
+		words.stream().forEach(word -> ohLawd.append(word.getWord() + " "));
+		return scoreString(ohLawd.toString());
+	}
+	
+	public Toxicity scoreString(String input) {
+		List<String> words = tokenise(input);
+		List<AfinnWord> wordsWithScores = AfinnData.stream().filter(word -> words.contains(word.getWord())).collect(Collectors.toList());
+		int negativeCount = 0;
+		int positiveCount = 0;
+		int score = 0;
+		for (AfinnWord word : wordsWithScores) {
+			if (word.getScore() < 0) negativeCount++;
+			else positiveCount++;
+			score = score + word.getScore();	
+		}
+		return new Toxicity(positiveCount, negativeCount, score, words.size(), wordsWithScores.size());
+	}
+
+	private String getAfinnData() {
+        try {
+        	StringBuilder resultBuilder = new StringBuilder();
+    		InputStream dataInStream = getClass().getClassLoader().getResourceAsStream("AFINN.txt");
+            BufferedReader br = new BufferedReader(new InputStreamReader(dataInStream));
+            String line;
+			while ((line = br.readLine()) != null) {
+				resultBuilder.append(line + "\n");
+			}
+			return resultBuilder.toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        return null;
+    }
     
     public void clearUser(final String userID) {
     	try (Session session = sessionFactory.openSession()) {
@@ -39,6 +113,16 @@ public class WordService
             final List<AlisonWord> list = (List<AlisonWord>) session.createQuery("FROM AlisonWord WHERE pack = :pack ORDER BY frequency DESC")
             		.setParameter("pack", userID)
             		.setMaxResults(5)
+            		.list();
+            return list;
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+	private List<AlisonWord> getALotOfWordsForuser(String userID) {
+        try (Session session = sessionFactory.openSession()) {
+            final List<AlisonWord> list = (List<AlisonWord>) session.createQuery("FROM AlisonWord WHERE pack = :pack")
+            		.setParameter("pack", userID)
             		.list();
             return list;
         }
