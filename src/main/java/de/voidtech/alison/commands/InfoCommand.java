@@ -37,7 +37,8 @@ public class InfoCommand extends AbstractCommand {
 						+ " To stop data collection, use the optout command."
 						+ " Once you are opted out, you can still use ALISON, but messages you send will not be processed or persisted.")
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
-				.setFooter("Use the help command to see what else I can do!", message.getJDA().getSelfUser().getAvatarUrl())
+				.setFooter("Use the help command to see what else I can do!\nVersion: " + GlobalConstants.VERSION,
+						message.getJDA().getSelfUser().getAvatarUrl())
 				.build();
 		message.replyEmbeds(informationEmbed).mentionRepliedUser(false).queue();
 	}
