@@ -65,13 +65,42 @@ public class WordService
 	public Toxicity scoreUser(String userID) {
 		List<AlisonWord> words = getALotOfWordsForuser(userID);
 		if (words.isEmpty()) return null;
-		List<AlisonWord> everySingleGoshDarnWord = new ArrayList<AlisonWord>();
+		java.util.Map<String, Integer> everySingleGoshDarnWord = new java.util.HashMap<>();
 		words.stream().forEach(word -> {
-			for (int i = 0; i < word.getFrequency(); i++) everySingleGoshDarnWord.add(word);
+		    everySingleGoshDarnWord.put(word.getWord().toLowerCase(), word.getFrequency());
+			//for (int i = 0; i < word.getFrequency(); i++) everySingleGoshDarnWord.add(word);
 		});
-		return scoreString(String.join(" ", everySingleGoshDarnWord.stream().map(w -> w.getWord()).collect(Collectors.toList())));
+		return scoreMap(everySingleGoshDarnWord);
 	}
-	
+	/**
+	 * fuck you seb*/
+	public AfinnWord yoinkWord(String word){
+	    //fuck you for making a class instead of using a map
+	    return AfinnData.stream().filter(w->w.getWord().equals(word)).toList().get(0);
+	    // also fuck your mother
+	}
+	/**
+	 * scoreMap
+	 * takes a Mapping of lower case Strings to their frequency and calculates Toxicity from it
+	 * I'm sure this code definitely works without having tested it*/	
+	public Toxicity scoreMap(java.util.Map<String, Integer> frequency_table){
+	    List<AfinnWord> wordsWithScores = AfinnData.stream()
+		.map(AfinnWord::getWord)
+		.filter(word->frequency_table.keySet().contains(word))
+		.map(this::yoinkWord)
+		.collect(Collectors.toList());
+	    int negativeCount = 0;
+	    int positiveCount = 0;
+	    int score = 0;
+	    for (AfinnWord word : wordsWithScores) {
+		    if (word.getScore() < 0) negativeCount++;
+		    else positiveCount++;
+		    score = score + word.getScore();	
+	    }
+	    int wordCount = frequency_table.size();
+	    int withScoreCount = wordsWithScores.size();
+	    return new Toxicity(positiveCount,negativeCount,score, wordCount, withScoreCount);
+	}
 	public Toxicity scoreString(String input) {
 		List<String> words = tokenise(input);
 		List<AfinnWord> wordsWithScores = new ArrayList<AfinnWord>();
