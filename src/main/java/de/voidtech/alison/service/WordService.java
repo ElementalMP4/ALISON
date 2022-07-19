@@ -65,13 +65,11 @@ public class WordService
 	public Toxicity scoreUser(String userID) {
 		List<AlisonWord> words = getALotOfWordsForuser(userID);
 		if (words.isEmpty()) return null;
-		StringBuilder ohLawd = new StringBuilder();
 		List<AlisonWord> everySingleGoshDarnWord = new ArrayList<AlisonWord>();
 		words.stream().forEach(word -> {
 			for (int i = 0; i < word.getFrequency(); i++) everySingleGoshDarnWord.add(word);
 		});
-		everySingleGoshDarnWord.stream().forEach(word -> ohLawd.append(word.getWord() + " "));
-		return scoreString(ohLawd.toString());
+		return scoreString(String.join(" ", everySingleGoshDarnWord.stream().map(w -> w.getWord()).collect(Collectors.toList())));
 	}
 	
 	public Toxicity scoreString(String input) {
