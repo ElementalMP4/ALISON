@@ -58,7 +58,7 @@ public class WordService
 	}
 	
 	private List<String> tokenise(String input) {
-		return Arrays.asList(input.toLowerCase().split(" "));
+		return Arrays.asList(input.toLowerCase().replaceAll("([^a-zA-Z])", input).split(" "));
 	}
 	
 	public Toxicity scoreUser(String userID) {
