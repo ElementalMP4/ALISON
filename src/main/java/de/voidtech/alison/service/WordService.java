@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -58,7 +59,7 @@ public class WordService
 	}
 	
 	private List<String> tokenise(String input) {
-		return Arrays.asList(input.toLowerCase().replaceAll("([^a-zA-Z])", input).split(" "));
+		return Arrays.asList(input.toLowerCase().split(" ")).stream().map(i -> i.replaceAll("([^a-zA-Z])", "")).collect(Collectors.toList());
 	}
 	
 	public Toxicity scoreUser(String userID) {
