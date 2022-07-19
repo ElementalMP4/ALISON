@@ -15,7 +15,7 @@ public class Toxicity {
 		this.score = score;
 		this.totalWords = totalWords;
 		this.tokens = tokens;
-		this.averageScore = score / tokens;
+		this.averageScore = (double)score / (double)tokens;
 	}
 	
 	public double getAverageScore() {
