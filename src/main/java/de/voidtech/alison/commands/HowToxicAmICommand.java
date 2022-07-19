@@ -26,53 +26,52 @@ public class HowToxicAmICommand extends AbstractCommand {
 	
 	@Override
 	public void execute(Message message, List<String> args) {
-		
-    	String userID;
-    	if (args.isEmpty()) userID = message.getAuthor().getId();
-    	else userID = args.get(0).replaceAll("([^0-9])", "");
-    	
-        if (userID.equals("")) {
-            message.reply("I couldn't find that user :(").mentionRepliedUser(false).queue();
-            return;
-        }
-        
-        Result<User> userResult = message.getJDA().retrieveUserById(userID).mapToResult().complete();
-        if (userResult.isSuccess()) {
-        	if (privacyService.userIsIgnored(userID)) {
-    			message.reply("This user has chosen not to be analysed!").mentionRepliedUser(false).queue();
-    			return;
-    		}
-    		Toxicity howToxic = wordService.scoreUser(userID);
-    		if (howToxic == null) {
-    			message.reply("I couldn't find any data to analyse!").mentionRepliedUser(false).queue();
-    			return;
-    		}
-    		MessageEmbed toxicityEmbed = new EmbedBuilder()
-    				.setColor(getColour(howToxic))
-    				.setTitle("How toxic is " + userResult.get().getName() + "?")
-    				.setDescription("I searched `" + howToxic.getTotalWordCount() +
-    						"` words. From this, I found `" + howToxic.getTokenCount() +
-    						"` words with meaning.\n" +
-    						"**Positive words found: `" + howToxic.getPositives() + "`**\n" +
-    						"**Negative words found: `" + howToxic.getNegatives() + "`**\n" +
-    						"**Total Score (higher is better!): `" + howToxic.getScore() + "`**")
-    				.setFooter(getMessage(howToxic))
-    				.build();
-    		message.replyEmbeds(toxicityEmbed).mentionRepliedUser(false).queue();
-        } else {
-        	message.reply("I couldn't find that user :(").mentionRepliedUser(false).queue();
-        }
+    	if (args.isEmpty()) analyse(message.getAuthor(), message);
+    	else {
+    		String userID = args.get(0).replaceAll("([^0-9])", "");
+    		if (userID.equals("")) {
+                message.reply("I couldn't find that user :(").mentionRepliedUser(false).queue();
+                return;
+            }
+            
+            Result<User> userResult = message.getJDA().retrieveUserById(userID).mapToResult().complete();
+            if (userResult.isSuccess()) analyse(userResult.get(), message);
+            else message.reply("I couldn't find that user :(").mentionRepliedUser(false).queue();
+    	}
+	}
+	
+	private void analyse(User user, Message message) {
+		if (privacyService.userIsIgnored(user.getId())) {
+			message.reply("This user has chosen not to be analysed!").mentionRepliedUser(false).queue();
+			return;
+		}
+		Toxicity howToxic = wordService.scoreUser(user.getId());
+		if (howToxic == null) {
+			message.reply("I couldn't find any data to analyse!").mentionRepliedUser(false).queue();
+			return;
+		}
+		MessageEmbed toxicityEmbed = new EmbedBuilder()
+				.setColor(getColour(howToxic))
+				.setTitle("How toxic is " + user.getName() + "?")
+				.setDescription("I searched `" + howToxic.getTotalWordCount() + "` words. From this, I found `" + howToxic.getTokenCount() + "` words with meaning.")
+				.addField("Positive words found", "```\n" + howToxic.getPositives() + "\n```", true)
+				.addField("Negative words found",  "```\n" + howToxic.getNegatives() + "\n```", true)
+				.addField("Total Score (higher is better!)",  "```\n" + howToxic.getScore() + "\n```", true)
+				.addField("Average Score (higher is better!)",  "```\n" + howToxic.getAverageScore() + "\n```", true)
+				.setFooter(getMessage(howToxic))
+				.build();
+		message.replyEmbeds(toxicityEmbed).mentionRepliedUser(false).queue();
 	}
 
 	private String getMessage(Toxicity howToxic) {
-		return howToxic.getScore() < -2 ? "You are a right asshole, you should be nicer >:("
-				: howToxic.getScore() < 2 ? "You're an alright person, but could be better." 
+		return howToxic.getAverageScore() < -2 ? "You are a right asshole, you should be nicer >:("
+				: howToxic.getAverageScore() < 2 ? "You're an alright person, but could be better." 
 				: "Everyone loves you! You say all the nicest things!";
 	}
 
 	private Color getColour(Toxicity howToxic) {
-		return howToxic.getScore() < -2 ? Color.RED 
-				: howToxic.getScore() < 2 ? Color.ORANGE
+		return howToxic.getAverageScore() < -2 ? Color.RED 
+				: howToxic.getAverageScore() < 2 ? Color.ORANGE
 				: Color.GREEN;
 	}
 

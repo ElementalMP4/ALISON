@@ -42,20 +42,19 @@ public class HowToxicIsThisCommand extends AbstractCommand {
 		Toxicity howToxic = wordService.scoreString(text);
 		MessageEmbed toxicityEmbed = new EmbedBuilder()
 				.setColor(getColour(howToxic))
-				.setTitle("Analysis Results")
-				.setDescription("The message you gave me has `" + howToxic.getTotalWordCount() +
-						"` words. From this, I found `" + howToxic.getTokenCount() +
-						"` words with meaning.\n" +
-						"**Positive words found: `" + howToxic.getPositives() + "`**\n" +
-						"**Negative words found: `" + howToxic.getNegatives() + "`**\n" +
-						"**Total Score (higher is better!): `" + howToxic.getScore() + "`**")
+				.setTitle("Message Analysis")
+				.setDescription("I searched `" + howToxic.getTotalWordCount() + "` words. From this, I found `" + howToxic.getTokenCount() + "` words with meaning.")
+				.addField("Positive words found", "```\n" + howToxic.getPositives() + "\n```", true)
+				.addField("Negative words found",  "```\n" + howToxic.getNegatives() + "\n```", true)
+				.addField("Total Score (higher is better!)",  "```\n" + howToxic.getScore() + "\n```", true)
+				.addField("Average Score (higher is better!)",  "```\n" + howToxic.getAverageScore() + "\n```", true)
 				.build();
 		message.replyEmbeds(toxicityEmbed).mentionRepliedUser(false).queue();
 	}
 
 	private Color getColour(Toxicity howToxic) {
-		return howToxic.getScore() < -2 ? Color.RED 
-				: howToxic.getScore() < 2 ? Color.ORANGE
+		return howToxic.getAverageScore() < -2 ? Color.RED 
+				: howToxic.getAverageScore() < 2 ? Color.ORANGE
 				: Color.GREEN;
 	}
 	
