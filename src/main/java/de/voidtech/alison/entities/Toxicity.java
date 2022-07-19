@@ -7,7 +7,7 @@ public class Toxicity {
 	private int score;
 	private int totalWords;
 	private int tokens;
-	private float averageScore;
+	private double averageScore;
 	
 	public Toxicity(int positive, int negative, int score, int totalWords, int tokens) {
 		this.positive = positive;
@@ -18,7 +18,7 @@ public class Toxicity {
 		this.averageScore = score / tokens;
 	}
 	
-	public float getAverageScore() {
+	public double getAverageScore() {
 		return this.averageScore;
 	}
 	
