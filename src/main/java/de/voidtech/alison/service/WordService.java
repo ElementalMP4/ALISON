@@ -6,11 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -65,13 +65,24 @@ public class WordService
 		List<AlisonWord> words = getALotOfWordsForuser(userID);
 		if (words.isEmpty()) return null;
 		StringBuilder ohLawd = new StringBuilder();
-		words.stream().forEach(word -> ohLawd.append(word.getWord() + " "));
+		List<AlisonWord> everySingleGoshDarnWord = new ArrayList<AlisonWord>();
+		words.stream().forEach(word -> {
+			for (int i = 0; i < word.getFrequency(); i++) everySingleGoshDarnWord.add(word);
+		});
+		everySingleGoshDarnWord.stream().forEach(word -> ohLawd.append(word.getWord() + " "));
 		return scoreString(ohLawd.toString());
 	}
 	
 	public Toxicity scoreString(String input) {
 		List<String> words = tokenise(input);
-		List<AfinnWord> wordsWithScores = AfinnData.stream().filter(word -> words.contains(word.getWord())).collect(Collectors.toList());
+		List<AfinnWord> wordsWithScores = new ArrayList<AfinnWord>();
+		AfinnData.stream().forEach(word -> {
+			if (words.contains(word.getWord())) {
+				for (int i = 0; i < Collections.frequency(words, word.getWord()); i++) {
+					wordsWithScores.add(word);
+				}
+			}
+		});
 		int negativeCount = 0;
 		int positiveCount = 0;
 		int score = 0;
