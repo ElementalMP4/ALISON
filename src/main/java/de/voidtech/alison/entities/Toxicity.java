@@ -27,16 +27,18 @@ public class Toxicity {
 		return list.stream().map(AfinnWord::getScore).reduce(0, Integer::sum);
 	}
 	
-	private double calculateAdjusted(int count, int multiplier) {
-		return (double)this.score + ((double)count * multiplier);
+	private int calculateAdjusted(int count, int subtractor, int multiplier) {
+		return this.score + ((count - subtractor) * multiplier);
 	}
 	
-	public double getAdjustedScore() {
+	public int getAdjustedScore() {
 		if (this.positives.size() == 0 & this.negatives.size() == 0) return 0;
-		if (this.positives.size() == 0) return calculateAdjusted(this.negatives.size(), -1);
-		if (this.negatives.size() == 0) return calculateAdjusted(this.positives.size(), 1);
+		if (this.positives.size() == 0) return calculateAdjusted(this.negatives.size(), this.positives.size(), -1);
+		if (this.negatives.size() == 0) return calculateAdjusted(this.positives.size(), this.negatives.size(), 1);
 		if (this.positives.size() == this.negatives.size()) return this.score;
-		return this.positives.size() < this.negatives.size() ? calculateAdjusted(this.negatives.size(), -1) : calculateAdjusted(this.positives.size(), 1);
+		return this.positives.size() < this.negatives.size() 
+				? calculateAdjusted(this.negatives.size(), this.positives.size(), -1) 
+				: calculateAdjusted(this.positives.size(), this.negatives.size(), 1);
 	}
 	
 	public double getAverageScore() {
