@@ -12,7 +12,6 @@ public class Toxicity {
 	private List<AfinnWord> tokens;
 	
 	private int score;
-	private double averageScore;
 	
 	public Toxicity(List<AfinnWord> positives, List<AfinnWord> negatives, List<String> originalWords) {
 		this.positives = positives;
@@ -20,7 +19,6 @@ public class Toxicity {
 		this.score = addAfinnScores(positives) + addAfinnScores(negatives);
 		this.originalWords = originalWords;
 		this.tokens = Stream.concat(this.positives.stream(), this.negatives.stream()).collect(Collectors.toList());
-		this.averageScore = (double)score / (double)tokens.size();
 	}
 	
 	private int addAfinnScores(List<AfinnWord> list) {
@@ -42,7 +40,8 @@ public class Toxicity {
 	}
 	
 	public double getAverageScore() {
-		return this.averageScore;
+		if (this.tokens.size() == 0) return 0;
+		return (double)score / (double)tokens.size();
 	}
 	
 	public int getNegativeCount() {
