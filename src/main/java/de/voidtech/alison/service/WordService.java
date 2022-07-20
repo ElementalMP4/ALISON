@@ -69,7 +69,7 @@ public class WordService
 		words.stream().forEach(word -> {
 			for (int i = 0; i < word.getFrequency(); i++) everySingleGoshDarnWord.add(word);
 		});
-		return scoreString(String.join(" ", everySingleGoshDarnWord.stream().map(w -> w.getWord()).collect(Collectors.toList())));
+		return scoreString(String.join(" ", everySingleGoshDarnWord.stream().map(AlisonWord::getWord).collect(Collectors.toList())));
 	}
 	
 	public Toxicity scoreString(String input) {
@@ -82,15 +82,13 @@ public class WordService
 				}
 			}
 		});
-		int negativeCount = 0;
-		int positiveCount = 0;
-		int score = 0;
+		List<AfinnWord> positives = new ArrayList<AfinnWord>();
+		List<AfinnWord> negatives = new ArrayList<AfinnWord>();
 		for (AfinnWord word : wordsWithScores) {
-			if (word.getScore() < 0) negativeCount++;
-			else positiveCount++;
-			score = score + word.getScore();	
+			if (word.getScore() < 0) negatives.add(word);
+			else positives.add(word);	
 		}
-		return new Toxicity(positiveCount, negativeCount, score, words.size(), wordsWithScores.size());
+		return new Toxicity(positives, negatives, words);
 	}
 
 	private String getAfinnData() {

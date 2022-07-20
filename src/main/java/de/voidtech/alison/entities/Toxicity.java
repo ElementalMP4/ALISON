@@ -1,33 +1,54 @@
 package main.java.de.voidtech.alison.entities;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class Toxicity {
 	
-	private int positive;
-	private int negative;
+	private List<AfinnWord> positives;
+	private List<AfinnWord> negatives;
+	private List<String> originalWords;
+	private List<AfinnWord> tokens;
+	
 	private int score;
-	private int totalWords;
-	private int tokens;
 	private double averageScore;
 	
-	public Toxicity(int positive, int negative, int score, int totalWords, int tokens) {
-		this.positive = positive;
-		this.negative = negative;
-		this.score = score;
-		this.totalWords = totalWords;
-		this.tokens = tokens;
-		this.averageScore = (double)score / (double)tokens;
+	public Toxicity(List<AfinnWord> positives, List<AfinnWord> negatives, List<String> originalWords) {
+		this.positives = positives;
+		this.negatives = negatives;
+		this.score = addAfinnScores(positives) + addAfinnScores(negatives);
+		this.originalWords = originalWords;
+		this.tokens = Stream.concat(this.positives.stream(), this.negatives.stream()).collect(Collectors.toList());
+		this.averageScore = (double)score / (double)tokens.size();
+	}
+	
+	private int addAfinnScores(List<AfinnWord> list) {
+		return list.stream().map(AfinnWord::getScore).reduce(0, Integer::sum);
+	}
+	
+	private double calculateAdjusted(int count, int multiplier) {
+		return (double)this.score + ((double)count * multiplier);
+	}
+	
+	public double getAdjustedScore() {
+		if (this.positives.size() == 0 & this.negatives.size() == 0) return 0;
+		if (this.positives.size() == 0) return calculateAdjusted(this.negatives.size(), -1);
+		if (this.negatives.size() == 0) return calculateAdjusted(this.positives.size(), 1);
+		if (this.positives.size() == this.negatives.size()) return this.score;
+		return this.positives.size() < this.negatives.size() ? calculateAdjusted(this.negatives.size(), -1) : calculateAdjusted(this.positives.size(), 1);
 	}
 	
 	public double getAverageScore() {
 		return this.averageScore;
 	}
 	
-	public int getNegatives() {
-		return this.negative;
+	public int getNegativeCount() {
+		return this.negatives.size();
 	}
 	
-	public int getPositives() {
-		return this.positive;
+	public int getPositiveCount() {
+		return this.positives.size();
 	}
 	
 	public int getScore() {
@@ -35,10 +56,10 @@ public class Toxicity {
 	}
 	
 	public int getTokenCount() {
-		return this.tokens;
+		return this.tokens.size();
 	}
 	
 	public int getTotalWordCount() {
-		return this.totalWords;
+		return this.originalWords.size();
 	}
 }

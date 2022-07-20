@@ -54,24 +54,25 @@ public class HowToxicAmICommand extends AbstractCommand {
 				.setColor(getColour(howToxic))
 				.setTitle("How toxic is " + user.getName() + "?")
 				.setDescription("I searched `" + howToxic.getTotalWordCount() + "` words. From this, I found `" + howToxic.getTokenCount() + "` words with meaning.")
-				.addField("Positive words found", "```\n" + howToxic.getPositives() + "\n```", true)
-				.addField("Negative words found",  "```\n" + howToxic.getNegatives() + "\n```", true)
+				.addField("Positive words found", "```\n" + howToxic.getPositiveCount() + "\n```", true)
+				.addField("Negative words found",  "```\n" + howToxic.getNegativeCount() + "\n```", true)
 				.addField("Total Score (higher is better!)",  "```\n" + howToxic.getScore() + "\n```", true)
 				.addField("Average Score (higher is better!)",  "```\n" + howToxic.getAverageScore() + "\n```", true)
+				.addField("Adjusted Score (higher is better!)",  "```\n" + howToxic.getAdjustedScore() + "\n```", true)
 				.setFooter(getMessage(howToxic))
 				.build();
 		message.replyEmbeds(toxicityEmbed).mentionRepliedUser(false).queue();
 	}
 
 	private String getMessage(Toxicity howToxic) {
-		return howToxic.getAverageScore() < -2 ? "You are a right asshole, you should be nicer >:("
-				: howToxic.getAverageScore() < 2 ? "You're an alright person, but could be better." 
+		return howToxic.getAdjustedScore() < -2 ? "You are a right asshole, you should be nicer >:("
+				: howToxic.getAdjustedScore() < 2 ? "You're an alright person, but could be better." 
 				: "Everyone loves you! You say all the nicest things!";
 	}
 
 	private Color getColour(Toxicity howToxic) {
-		return howToxic.getAverageScore() < -2 ? Color.RED 
-				: howToxic.getAverageScore() < 2 ? Color.ORANGE
+		return howToxic.getAdjustedScore() < -2 ? Color.RED 
+				: howToxic.getAdjustedScore() < 2 ? Color.ORANGE
 				: Color.GREEN;
 	}
 
