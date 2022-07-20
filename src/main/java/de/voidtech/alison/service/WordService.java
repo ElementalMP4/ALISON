@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import main.java.de.voidtech.alison.entities.AfinnWord;
 import main.java.de.voidtech.alison.entities.AlisonWord;
 import main.java.de.voidtech.alison.entities.Toxicity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Webhook;
@@ -62,15 +64,35 @@ public class WordService
 		return Arrays.asList(input.toLowerCase().split(" ")).stream().map(i -> i.replaceAll("([^a-zA-Z])", "")).collect(Collectors.toList());
 	}
 	
-	public Toxicity scoreUser(String userID) {
-		List<AlisonWord> words = getALotOfWordsForuser(userID);
-		if (words.isEmpty()) return null;
+	private String alisonWordListToString(List<AlisonWord> words) {
 		List<AlisonWord> everySingleGoshDarnWord = new ArrayList<AlisonWord>();
 		words.stream().forEach(word -> {
 			for (int i = 0; i < word.getFrequency(); i++) everySingleGoshDarnWord.add(word);
 		});
-		return scoreString(String.join(" ", everySingleGoshDarnWord.stream().map(AlisonWord::getWord).collect(Collectors.toList())));
+		return String.join(" ", everySingleGoshDarnWord.stream().map(AlisonWord::getWord).collect(Collectors.toList()));
 	}
+	
+	public Toxicity scoreUser(String userID) {
+		List<AlisonWord> words = getALotOfWordsForuser(userID);
+		if (words.isEmpty()) return null;
+		return scoreString(alisonWordListToString(words));
+	}
+	
+	public Toxicity scoreServer(Guild guild) {
+		List<AlisonWord> words = getAllWordsForServer(guild.getMembers().stream().map(Member::getId).collect(Collectors.toList()));
+		if (words.isEmpty()) return null;
+		return scoreString(alisonWordListToString(words));
+	}
+	
+    @SuppressWarnings("unchecked")
+	private List<AlisonWord> getAllWordsForServer(List<String> members) {
+    	try (Session session = sessionFactory.openSession()) {
+            final List<AlisonWord> list = (List<AlisonWord>) session.createQuery("FROM AlisonWord WHERE pack IN :memberList")
+            		.setParameter("memberList", members)
+            		.list();
+            return list;
+        }
+    }
 	
 	public Toxicity scoreString(String input) {
 		List<String> words = tokenise(input);
