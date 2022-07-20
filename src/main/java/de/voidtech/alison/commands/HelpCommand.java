@@ -25,7 +25,7 @@ public class HelpCommand extends AbstractCommand {
 		if (args.size() == 0) showAllCommands(message);
 		else {
 			AbstractCommand commandOpt = commands.stream()
-					.filter(c -> c.getName().equals(args.get(0)))
+					.filter(c -> c.getName().equals(args.get(0)) | c.getShortName().equals(args.get(0)))
 					.collect(CustomCollectors.toSingleton());
 			if (commandOpt == null) message.reply("I couldn't find that command :(").mentionRepliedUser(false).queue();
 			else showCommandHelp(commandOpt, message);

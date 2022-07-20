@@ -58,17 +58,17 @@ public class CommandService
             message.replyEmbeds(createLevenshteinEmbed(possibleOptions)).mentionRepliedUser(false).queue();
     }
     
-    public void handleCommand(final Message message) {
-        final String prefix = this.config.getDefaultPrefix();
+    public void handleCommand(Message message) {
+        String prefix = this.config.getDefaultPrefix();
         if (!this.shouldHandleAsChatCommand(prefix, message)) {
         	if (privacyService.userIsIgnored(message.getAuthor().getId())) return;
             this.wordService.learn(message.getAuthor().getId(), message.getContentRaw());
             return;
         }
-        final String messageContent = message.getContentRaw().substring(prefix.length());
-        final List<String> messageArray = Arrays.asList(messageContent.trim().split("\\s+"));
-        final AbstractCommand commandOpt = commands.stream()
-        		.filter(command -> command.getName().equals(messageArray.get(0)))
+        String messageContent = message.getContentRaw().substring(prefix.length());
+        List<String> messageArray = Arrays.asList(messageContent.trim().split("\\s+"));
+        AbstractCommand commandOpt = commands.stream()
+        		.filter(command -> command.getName().equals(messageArray.get(0)) | command.getShortName().equals(messageArray.get(0)))
         		.collect(CustomCollectors.toSingleton());
         if (commandOpt == null) {
             LOGGER.log(Level.INFO, "Command not found: " + messageArray.get(0));
