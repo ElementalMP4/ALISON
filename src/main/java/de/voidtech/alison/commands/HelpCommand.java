@@ -76,4 +76,9 @@ public class HelpCommand extends AbstractCommand {
 		return "Shows you how to use all the commands!";
 	}
 
+	@Override
+	public String getShortName() {
+		return "h";
+	}
+
 }

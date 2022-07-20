@@ -77,4 +77,9 @@ public class HowToxicIsThisServer extends AbstractCommand {
 		return "Want to see how toxic your server is? You may not like the results...";
 	}
 
+	@Override
+	public String getShortName() {
+		return "hts";
+	}
+
 }

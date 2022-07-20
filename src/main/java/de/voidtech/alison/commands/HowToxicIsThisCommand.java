@@ -74,4 +74,9 @@ public class HowToxicIsThisCommand extends AbstractCommand {
 		return "Tell me something interesting and I'll tell you how nasty or nice it is!";
 	}
 
+	@Override
+	public String getShortName() {
+		return "htthis";
+	}
+
 }

@@ -43,4 +43,9 @@ public class OptInCommand extends AbstractCommand {
 				+ " You can use the optout command to stop ALISON from learning from you, and the clear command to delete all your learnt words.";
 	}
 
+	@Override
+	public String getShortName() {
+		return "in";
+	}
+
 }

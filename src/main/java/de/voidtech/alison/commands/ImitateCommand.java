@@ -57,4 +57,9 @@ public class ImitateCommand extends AbstractCommand
 				+ " and when you use this command, she uses her knowledge to try and speak like you do!\n\n"
 				+ "To stop ALISON from learning from you, use the optout command!";
 	}
+
+	@Override
+	public String getShortName() {
+		return "i";
+	}
 }

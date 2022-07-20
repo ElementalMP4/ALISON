@@ -37,16 +37,21 @@ public class TopFiveCommand extends AbstractCommand
     
     @Override
     public String getName() {
-        return "top";
+        return "topfive";
     }
 
 	@Override
 	public String getUsage() {
-		return "top";
+		return "topfive";
 	}
 
 	@Override
 	public String getDescription() {
 		return "Allows you to see your top 5 most common word combinations!";
+	}
+
+	@Override
+	public String getShortName() {
+		return "top";
 	}
 }

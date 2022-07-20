@@ -57,5 +57,10 @@ public class InfoCommand extends AbstractCommand {
 	public String getName() {
 		return "info";
 	}
+
+	@Override
+	public String getShortName() {
+		return "inf";
+	}
 }
 

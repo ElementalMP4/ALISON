@@ -90,4 +90,9 @@ public class HowToxicAmICommand extends AbstractCommand {
 	public String getDescription() {
 		return "Using everything I know about you, I will determine how toxic you are!";
 	}
+
+	@Override
+	public String getShortName() {
+		return "htme";
+	}
 }
