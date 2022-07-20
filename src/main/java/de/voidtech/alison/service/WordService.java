@@ -42,6 +42,9 @@ public class WordService
     @Autowired
     private WebhookManager webhookManager;
     
+    @Autowired
+    private PrivacyService privacyService; 
+    
     @EventListener(ApplicationReadyEvent.class)
     private void loadAfinn() {
     	LOGGER.log(Level.INFO, "Loading AFINN dataset...");
@@ -79,7 +82,10 @@ public class WordService
 	}
 	
 	public Toxicity scoreServer(Guild guild) {
-		List<AlisonWord> words = getAllWordsForServer(guild.getMembers().stream().map(Member::getId).collect(Collectors.toList()));
+		List<AlisonWord> words = getAllWordsForServer(guild.getMembers().stream()
+				.map(Member::getId)
+				.filter(memberID -> !privacyService.userIsIgnored(memberID))
+				.collect(Collectors.toList()));
 		if (words.isEmpty()) return null;
 		return scoreString(alisonWordListToString(words));
 	}
