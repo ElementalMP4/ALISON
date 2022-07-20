@@ -55,6 +55,7 @@ public class HelpCommand extends AbstractCommand {
 				.setDescription(addFormatting(command.getDescription()))
 				.addField("Usage", addFormatting(command.getUsage()), true)
 				.addField("Name", addFormatting(command.getName()), true)
+				.addField("Short name", addFormatting(command.getShortName()), true)
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 				.setFooter(GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
 				.build();
