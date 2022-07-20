@@ -24,8 +24,6 @@ import org.springframework.stereotype.Service;
 import main.java.de.voidtech.alison.entities.AfinnWord;
 import main.java.de.voidtech.alison.entities.AlisonWord;
 import main.java.de.voidtech.alison.entities.Toxicity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Webhook;
@@ -41,9 +39,6 @@ public class WordService
     
     @Autowired
     private WebhookManager webhookManager;
-    
-    @Autowired
-    private PrivacyService privacyService; 
     
     @EventListener(ApplicationReadyEvent.class)
     private void loadAfinn() {
@@ -81,11 +76,8 @@ public class WordService
 		return scoreString(alisonWordListToString(words));
 	}
 	
-	public Toxicity scoreServer(Guild guild) {
-		List<AlisonWord> words = getAllWordsForServer(guild.getMembers().stream()
-				.map(Member::getId)
-				.filter(memberID -> !privacyService.userIsIgnored(memberID))
-				.collect(Collectors.toList()));
+	public Toxicity scoreServer(List<String> members) {
+		List<AlisonWord> words = getAllWordsForServer(members);
 		if (words.isEmpty()) return null;
 		return scoreString(alisonWordListToString(words));
 	}
