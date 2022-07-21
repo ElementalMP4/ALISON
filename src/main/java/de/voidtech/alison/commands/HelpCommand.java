@@ -33,7 +33,10 @@ public class HelpCommand extends AbstractCommand {
 	}
 
 	private void showAllCommands(Message message) {
-		String commandsList = String.join("\n", commands.stream().map(c -> addFormatting(c.getName())).collect(Collectors.toList()));
+		String commandsList = String.join("\n", commands.stream()
+				.filter(c -> !c.isHidden())
+				.map(c -> addFormatting(c.getName()))
+				.collect(Collectors.toList()));
 		MessageEmbed helpEmbed = new EmbedBuilder()
 				.setTitle("ALISON Commands")
 				.setColor(Color.ORANGE)
