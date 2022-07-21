@@ -54,4 +54,9 @@ public class TopFiveCommand extends AbstractCommand
 	public String getShortName() {
 		return "top";
 	}
+	
+	@Override
+	public boolean isHidden() {
+		return false;
+	}
 }

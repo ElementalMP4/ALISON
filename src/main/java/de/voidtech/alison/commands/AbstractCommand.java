@@ -21,4 +21,5 @@ public abstract class AbstractCommand {
     public abstract String getShortName();
     public abstract String getUsage();
     public abstract String getDescription();
+    public abstract boolean isHidden();
 }

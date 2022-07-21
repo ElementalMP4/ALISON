@@ -88,5 +88,10 @@ public class OptOutCommand extends AbstractCommand {
 	public String getShortName() {
 		return "out";
 	}
+	
+	@Override
+	public boolean isHidden() {
+		return false;
+	}
 
 }

@@ -62,4 +62,9 @@ public class ImitateCommand extends AbstractCommand
 	public String getShortName() {
 		return "i";
 	}
+	
+	@Override
+	public boolean isHidden() {
+		return false;
+	}
 }

@@ -95,4 +95,9 @@ public class HowToxicAmICommand extends AbstractCommand {
 	public String getShortName() {
 		return "htme";
 	}
+	
+	@Override
+	public boolean isHidden() {
+		return false;
+	}
 }

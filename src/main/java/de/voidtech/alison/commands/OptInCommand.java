@@ -47,5 +47,10 @@ public class OptInCommand extends AbstractCommand {
 	public String getShortName() {
 		return "in";
 	}
+	
+	@Override
+	public boolean isHidden() {
+		return false;
+	}
 
 }

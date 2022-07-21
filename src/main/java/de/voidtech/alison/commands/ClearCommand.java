@@ -80,4 +80,9 @@ public class ClearCommand extends AbstractCommand
 	public String getShortName() {
 		return "c";
 	}
+
+	@Override
+	public boolean isHidden() {
+		return false;
+	}
 }

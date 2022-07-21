@@ -62,5 +62,10 @@ public class InfoCommand extends AbstractCommand {
 	public String getShortName() {
 		return "inf";
 	}
+	
+	@Override
+	public boolean isHidden() {
+		return false;
+	}
 }
 

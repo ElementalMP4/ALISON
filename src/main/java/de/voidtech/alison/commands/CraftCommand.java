@@ -52,5 +52,10 @@ public class CraftCommand extends AbstractCommand {
 	public String getDescription() {
 		return "Allows a sentence to be generated for any loaded pack";
 	}
+	
+	@Override
+	public boolean isHidden() {
+		return true;
+	}
 
 }

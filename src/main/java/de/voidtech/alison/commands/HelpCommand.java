@@ -81,5 +81,10 @@ public class HelpCommand extends AbstractCommand {
 	public String getShortName() {
 		return "h";
 	}
+	
+	@Override
+	public boolean isHidden() {
+		return false;
+	}
 
 }

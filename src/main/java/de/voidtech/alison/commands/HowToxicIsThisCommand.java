@@ -78,5 +78,10 @@ public class HowToxicIsThisCommand extends AbstractCommand {
 	public String getShortName() {
 		return "htthis";
 	}
+	
+	@Override
+	public boolean isHidden() {
+		return false;
+	}
 
 }

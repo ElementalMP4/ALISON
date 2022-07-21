@@ -101,5 +101,10 @@ public class LoadFileCommand extends AbstractCommand {
 	public String getDescription() {
 		return "Allows a file to be uploaded to ALISON's database";
 	}
+	
+	@Override
+	public boolean isHidden() {
+		return true;
+	}
 
 }
