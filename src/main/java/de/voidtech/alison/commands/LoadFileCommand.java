@@ -30,6 +30,10 @@ public class LoadFileCommand extends AbstractCommand {
 	
 	private static final Logger LOGGER = Logger.getLogger(LoadFileCommand.class.getSimpleName());
 	
+	private float progressPercentage(int loaded, int total) {
+		return ((float)loaded / (float)total) * 100;
+	}
+	
 	@Override
 	public void execute(Message message, List<String> args) {
 		if (!config.getMaster().equals(message.getAuthor().getId())) {
@@ -56,7 +60,7 @@ public class LoadFileCommand extends AbstractCommand {
 			for (String line : content) {
 				loaded++;
 				wordService.learn(textFileAttachment.getFileName(), line);
-				LOGGER.log(Level.INFO, "Loaded " + loaded + "/" + content.size() + " (" + ((loaded/content.size()) * 100) + ")");
+				LOGGER.log(Level.INFO, "Loaded " + loaded + "/" + content.size() + " (" + progressPercentage(loaded, content.size()) + ")");
 				
 			};
 			textFile.delete();
