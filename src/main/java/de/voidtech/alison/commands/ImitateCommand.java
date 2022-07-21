@@ -37,7 +37,7 @@ public class ImitateCommand extends AbstractCommand
         		message.reply("This user has chosen not to be imitated.").mentionRepliedUser(false).queue();
         		return;
         	}
-            wordService.generateRandomSentence(userResult.get(), message);
+            wordService.generateRandomSentenceForUser(userResult.get(), message);
         } else message.reply("User " + ID + " could not be found").mentionRepliedUser(false).queue();
     }
     

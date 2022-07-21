@@ -120,6 +120,7 @@ public class WordService
 			while ((line = br.readLine()) != null) {
 				resultBuilder.append(line + "\n");
 			}
+			br.close();
 			return resultBuilder.toString();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -215,17 +216,13 @@ public class WordService
         }
     }
     
-    public void generatePromptedSentence(User user, Message message, String prompt) {
-        List<AlisonWord> startWords = getWordList(user.getId(), prompt);
-        if (startWords == null) {
-        	message.reply("I couldn't use that prompt :(").mentionRepliedUser(false).queue();
-        }
+    private String generateMarkov(List<AlisonWord> startWords, String pack) {
         List<String> results = new ArrayList<String>();
         AlisonWord next;
         List<AlisonWord> choices;
         for (next = this.getRandomWord(startWords); !next.isStopWord(); next = this.getRandomWord(choices)) {
             results.add(next.getWord());
-            List<AlisonWord> potentials = getWordList(user.getId(), next.getNext());
+            List<AlisonWord> potentials = getWordList(pack, next.getNext());
             choices = new ArrayList<AlisonWord>();
             for (AlisonWord word : potentials) {
                 for (int i = 0; i < word.getFrequency(); ++i) {
@@ -235,17 +232,31 @@ public class WordService
         }
         results.add(next.getWord());
         String result = String.join(" ", results);
-        Webhook webhook = webhookManager.getOrCreateWebhook(message.getTextChannel(), "Alison", message.getJDA().getSelfUser().getId());
-        webhookManager.postMessage(result, user.getAvatarUrl(), user.getName(), webhook);
+        return result;
     }
     
-    public void generateRandomSentence(User user, Message message) {
+    public void generatePromptedSentence(User user, Message message, String prompt) {
+        List<AlisonWord> startWords = getWordList(user.getId(), prompt);
+        if (startWords == null) {
+        	message.reply("I couldn't use that prompt :(").mentionRepliedUser(false).queue();
+        }
+        Webhook webhook = webhookManager.getOrCreateWebhook(message.getTextChannel(), "Alison", message.getJDA().getSelfUser().getId());
+        webhookManager.postMessage(generateMarkov(startWords, user.getId()), user.getAvatarUrl(), user.getName(), webhook);
+    }
+    
+    public void generateRandomSentenceForUser(User user, Message message) {
         AlisonWord start = getRandomWord(user.getId());
         if (start == null) {
             message.reply("I couldn't imitate that person :(").mentionRepliedUser(false).queue();
         } else {
         	generatePromptedSentence(user, message, start.getWord());
         }
+    }
+    
+    public String generateRandomSentenceForPack(String pack) {
+    	AlisonWord start = getRandomWord(pack);
+    	List<AlisonWord> startWords = getWordList(pack, start.getWord());
+    	return generateMarkov(startWords, pack);
     }
 
 	public long getWordCountForUser(String id) {

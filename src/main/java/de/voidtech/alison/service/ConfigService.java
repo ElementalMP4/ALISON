@@ -55,6 +55,11 @@ public class ConfigService
         return (prefix != null) ? prefix : "a!";
     }
     
+    public String getMaster() {
+        final String master = this.config.getProperty("master");
+        return (master != null) ? master : "497341083949465600";
+    }
+    
     public String getHibernateDialect() {
         final String dialect = this.config.getProperty("hibernate.Dialect");
         return (dialect != null) ? dialect : "org.hibernate.dialect.PostgreSQLDialect";
