@@ -55,7 +55,7 @@ public class LoadFileCommand extends AbstractCommand {
 			int loaded = 0;
 			for (String line : content) {
 				loaded++;
-				wordService.learn(textFileAttachment.getFileName().split(".")[0], line);
+				wordService.learn(textFileAttachment.getFileName(), line);
 				LOGGER.log(Level.INFO, "Loaded " + loaded + "/" + content.size() + " (" + ((loaded/content.size()) * 100) + ")");
 				
 			};
